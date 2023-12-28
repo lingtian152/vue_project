@@ -19,7 +19,7 @@
   </el-menu>
 </template>
 
-<script>
+<script scoped>
 import { ElMessage } from 'element-plus'
 
 export default {

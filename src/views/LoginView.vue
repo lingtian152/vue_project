@@ -31,9 +31,10 @@ const login = async () => {
     })
 
     if (response.status === 200) {
+      // success fetched password and username
       ElMessage({
         showClose: true,
-        message: '成功登录',
+        message: response.data.message,
         type: 'success'
       })
       // Use $router from the context
@@ -41,7 +42,7 @@ const login = async () => {
     } else {
       ElMessage({
         showClose: true,
-        message: response.status,
+        message: response.data.message,
         type: 'error'
       })
     }
@@ -56,15 +57,11 @@ const login = async () => {
 }
 
 const register = async () => {
-  try {
-    router.push('/register')
-  } catch (error) {
-    console.error(error)
-  }
+  router.push('/register')
 }
 </script>
 
-<style>
+<style scoped>
 body {
   background-color: #bdbdbd;
 }

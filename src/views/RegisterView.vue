@@ -24,7 +24,34 @@ const account = ref('')
 const password = ref('')
 
 const register = async () => {
-  
+  try {
+    // Make a POST request to the registration endpoint
+    const response = await axios.post('http://127.0.0.1:3000/register', {
+      username: account.value,
+      password: password.value
+    })
+
+    // Check the response from the registration API
+    if (response.status === 201) {
+      // If registration is successful, you can handle the success here
+      ElMessage({
+        showClose: true,
+        message: response.data.message,
+        type: 'success'
+      })
+      router.push('/')
+    } else {
+      // Handle other status codes if needed
+      ElMessage({
+        showClose: true,
+        message: response.data.message,
+        type: 'success'
+      })
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the HTTP request
+    console.error('Error during registration:', error)
+  }
 }
 
 const login = async () => {
@@ -32,7 +59,7 @@ const login = async () => {
 }
 </script>
 
-<style>
+<style scoped>
 body {
   background-color: #bdbdbd;
 }

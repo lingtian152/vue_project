@@ -17,21 +17,6 @@ const connection = mysql.createConnection({
   database: 'data_test'
 })
 
-// Connect to MySQL database
-function connect() {
-  return new Promise((resolve, reject) => {
-    connection.connect((err) => {
-      if (err) {
-        console.error('Error connecting to MySQL database:', err)
-        reject(err)
-      } else {
-        console.log('Connected to MySQL database')
-        resolve(connection)
-      }
-    })
-  })
-}
-
 // Wrapper for async MySQL queries using promises
 function queryAsync(sql, values) {
   return new Promise((resolve, reject) => {
@@ -48,7 +33,7 @@ function queryAsync(sql, values) {
 // Establish database connection
 async function establishConnection() {
   try {
-    await connect()
+    await connection.promise().execute('SELECT 1') // Check if the connection is alive
     console.log('Connection established successfully')
   } catch (err) {
     console.error('Retrying after 2 seconds')
@@ -59,18 +44,21 @@ async function establishConnection() {
 // API endpoint for login
 app.post('/login', async (req, res) => {
   const { username, password } = req.body
-  res.header('Access-Control-Allow-Origin', '*') // Setting response header
+  res.header('Access-Control-Allow-Origin', '*')
 
   try {
-    // Perform MySQL query to check if the user exists
     const results = await queryAsync('SELECT * FROM users WHERE username = ?', [username])
 
     if (results.length === 0) {
       res.status(401).json({ error: '用户名或密码错误' })
     } else {
-      const hashedPassword = results[0].password
+      const hashedPassword = results[0]?.password
 
-      // Compare the hashed password with the provided password
+      if (!hashedPassword) {
+        res.status(500).json({ error: '无法检索用户密码' })
+        return
+      }
+
       const passwordMatch = await bcrypt.compare(password, hashedPassword)
 
       if (passwordMatch) {
@@ -82,6 +70,31 @@ app.post('/login', async (req, res) => {
   } catch (error) {
     console.error('Error during login:', error)
     res.status(500).json({ error: '内部服务器错误' })
+  }
+})
+
+// API endpoint for registration
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body
+
+  try {
+    // Ensure that password is a string before proceeding
+    if (typeof password !== 'string') {
+      return res.status(400).json({ error: 'Invalid password format' })
+    }
+
+    // Hash the password using bcrypt before storing it in the database
+    const saltRounds = 10 // Adjust the number of rounds as needed
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+
+    // Perform MySQL query to insert the user into the database
+    const query = 'INSERT INTO users (username, password) VALUES (?, ?)'
+    await queryAsync(query, [username, hashedPassword])
+
+    res.status(201).json({ message: '注册成功' })
+  } catch (error) {
+    console.error('Error during registration:', error)
+    res.status(500).json({ error: 'Internal server error' })
   }
 })
 
