@@ -1,14 +1,14 @@
 <template>
   <main>
     <el-row class="login mb-4">
-      <el-text class="title">登录</el-text>
+      <el-text class="title">注册</el-text>
       <el-col class="input">
         <el-input v-model="account" placeholder="账号" class="Login-Account" />
         <el-input v-model="password" placeholder="密码" show-password class="Login-Password" />
       </el-col>
       <el-col class="btn mb-4">
-        <el-button class="login-btn" @click="login">登录</el-button>
         <el-button class="register-btn" @click="register">注册</el-button>
+        <el-button class="login-btn" @click="login">登录</el-button>
       </el-col>
     </el-row>
   </main>
@@ -23,44 +23,12 @@ import router from '@/router'
 const account = ref('')
 const password = ref('')
 
-const login = async () => {
-  try {
-    const response = await axios.post('http://127.0.0.1:3000/login', {
-      username: account.value,
-      password: password.value
-    })
-
-    if (response.status === 200) {
-      ElMessage({
-        showClose: true,
-        message: '成功登录',
-        type: 'success'
-      })
-      // Use $router from the context
-      router.push('/dashboard')
-    } else {
-      ElMessage({
-        showClose: true,
-        message: response.status,
-        type: 'error'
-      })
-    }
-  } catch (error) {
-    console.error('Error during login:', error)
-    ElMessage({
-      showClose: true,
-      message: error,
-      type: 'error'
-    })
-  }
+const register = async () => {
+  
 }
 
-const register = async () => {
-  try {
-    router.push('/register')
-  } catch (error) {
-    console.error(error)
-  }
+const login = async () => {
+  router.push('/')
 }
 </script>
 

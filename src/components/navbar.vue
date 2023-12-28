@@ -34,7 +34,7 @@ export default {
       this.logout()
     },
     logout() {
-      this.$router.push('/login')
+      this.$router.push('/')
     }
   }
 }
@@ -64,8 +64,6 @@ nav {
   bottom: 0px;
   width: 150px;
 }
-
-
 
 .el-menu-vertical {
   margin: 5px;
