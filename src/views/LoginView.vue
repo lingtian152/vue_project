@@ -30,79 +30,34 @@ const login = async () => {
       password: password.value
     })
 
-    if (response.status === 200) {
-      // success fetched password and username
-      ElMessage({
-        showClose: true,
-        message: response.data.message,
-        type: 'success'
-      })
-      // Use $router from the context
+    const message = response.data.message
+
+    ElMessage({
+      showClose: true,
+      message,
+      type: message === '登录成功' ? 'success' : 'error'
+    })
+
+    if (message === '登录成功') {
       router.push('/dashboard')
-    } else {
-      ElMessage({
-        showClose: true,
-        message: response.data.message,
-        type: 'error'
-      })
     }
   } catch (error) {
     console.error('Error during login:', error)
     ElMessage({
       showClose: true,
-      message: error,
+      message: '登录失败',
       type: 'error'
     })
   }
 }
 
 const register = async () => {
-  router.push('/register')
+  try {
+    router.push('/register')
+  } catch (error) {
+    console.error(error)
+  }
 }
 </script>
 
-<style scoped>
-body {
-  background-color: #bdbdbd;
-}
-
-.login {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  justify-content: center;
-  height: auto;
-  width: 25%;
-  background-color: antiquewhite;
-  padding: 25px;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.256);
-}
-
-.login .title {
-  text-align: center;
-  justify-content: center;
-  font-size: 25px;
-}
-
-.login .input .el-input {
-  padding-top: 15px;
-  border-radius: 25px;
-}
-
-.login .btn {
-  justify-content: center;
-  align-items: center;
-  padding: 15px;
-}
-
-.login .btn .el-button {
-  border-radius: 5px;
-  text-align: center;
-  padding: 10px;
-  margin-right: 5px;
-  height: auto;
-  width: 45%;
-  font-size: 20px;
-}
-</style>
+<style src="../assets/css/login.css" scoped></style>

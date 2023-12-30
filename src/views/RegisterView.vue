@@ -31,26 +31,25 @@ const register = async () => {
       password: password.value
     })
 
-    // Check the response from the registration API
-    if (response.status === 201) {
-      // If registration is successful, you can handle the success here
-      ElMessage({
-        showClose: true,
-        message: response.data.message,
-        type: 'success'
-      })
+    const message = response.data.message
+
+    ElMessage({
+      showClose: true,
+      message,
+      type: message === '注册成功' ? 'success' : 'error'
+    })
+
+    if (message === '注册成功') {
       router.push('/')
-    } else {
-      // Handle other status codes if needed
-      ElMessage({
-        showClose: true,
-        message: response.data.message,
-        type: 'success'
-      })
     }
   } catch (error) {
     // Handle any errors that occurred during the HTTP request
     console.error('Error during registration:', error)
+    ElMessage({
+      showClose: true,
+      message: '注册失败',
+      type: 'error'
+    })
   }
 }
 
@@ -59,48 +58,4 @@ const login = async () => {
 }
 </script>
 
-<style scoped>
-body {
-  background-color: #bdbdbd;
-}
-
-.login {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  justify-content: center;
-  height: auto;
-  width: 25%;
-  background-color: antiquewhite;
-  padding: 25px;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.256);
-}
-
-.login .title {
-  text-align: center;
-  justify-content: center;
-  font-size: 25px;
-}
-
-.login .input .el-input {
-  padding-top: 15px;
-  border-radius: 25px;
-}
-
-.login .btn {
-  justify-content: center;
-  align-items: center;
-  padding: 15px;
-}
-
-.login .btn .el-button {
-  border-radius: 5px;
-  text-align: center;
-  padding: 10px;
-  margin-right: 5px;
-  height: auto;
-  width: 45%;
-  font-size: 20px;
-}
-</style>
+<style src="../assets/css/login.css" scoped></style>

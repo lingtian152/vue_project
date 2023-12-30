@@ -6,9 +6,8 @@ import bodyParser from 'body-parser'
 
 const app = express()
 app.use(cors())
-app.use(bodyParser.json()) // Use body-parser middleware
+app.use(bodyParser.json())
 
-// MySQL connection configuration
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   port: '3306',
@@ -17,7 +16,6 @@ const connection = mysql.createConnection({
   database: 'data_test'
 })
 
-// Wrapper for async MySQL queries using promises
 function queryAsync(sql, values) {
   return new Promise((resolve, reject) => {
     connection.query(sql, values, (error, results) => {
@@ -30,10 +28,9 @@ function queryAsync(sql, values) {
   })
 }
 
-// Establish database connection
 async function establishConnection() {
   try {
-    await connection.promise().execute('SELECT 1') // Check if the connection is alive
+    await connection.promise().execute('SELECT 1')
     console.log('Connection established successfully')
   } catch (err) {
     console.error('Retrying after 2 seconds')
@@ -41,7 +38,6 @@ async function establishConnection() {
   }
 }
 
-// API endpoint for login
 app.post('/login', async (req, res) => {
   const { username, password } = req.body
   res.header('Access-Control-Allow-Origin', '*')
@@ -50,13 +46,12 @@ app.post('/login', async (req, res) => {
     const results = await queryAsync('SELECT * FROM users WHERE username = ?', [username])
 
     if (results.length === 0) {
-      res.status(401).json({ error: '用户名或密码错误' })
+      res.status(200).json({ message: '用户名或密码错误' }) // 返回错误
     } else {
       const hashedPassword = results[0]?.password
 
       if (!hashedPassword) {
-        res.status(500).json({ error: '无法检索用户密码' })
-        return
+        res.status(500).json({ message: '无法检索用户密码' })
       }
 
       const passwordMatch = await bcrypt.compare(password, hashedPassword)
@@ -64,43 +59,39 @@ app.post('/login', async (req, res) => {
       if (passwordMatch) {
         res.status(200).json({ message: '登录成功' })
       } else {
-        res.status(401).json({ error: '账号或密码错误' })
+        res.status(200).json({ message: '账号或密码错误' })
       }
     }
   } catch (error) {
     console.error('Error during login:', error)
-    res.status(500).json({ error: '内部服务器错误' })
+    res.status(500).json({ message: '内部服务器错误' })
   }
 })
 
-// API endpoint for registration
 app.post('/register', async (req, res) => {
   const { username, password } = req.body
-
+  res.header('Access-Control-Allow-Origin', '*')
   try {
-    // Ensure that password is a string before proceeding
-    if (typeof password !== 'string') {
-      return res.status(400).json({ error: 'Invalid password format' })
+    if (password === '' || username === '') {
+      res.status(201).json({ message: '请输入账号密码' }) // 返回错误
+    } else {
+      const saltRounds = 10
+      const hashedPassword = await bcrypt.hash(password, saltRounds) // 生成哈希密码
+
+      const query = 'INSERT INTO users (username, password) VALUES (?, ?)' // 插入数据
+      await queryAsync(query, [username, hashedPassword]) // 执行插入
+
+      res.status(201).json({ message: '注册成功' }) // 返回成功
     }
-
-    // Hash the password using bcrypt before storing it in the database
-    const saltRounds = 10 // Adjust the number of rounds as needed
-    const hashedPassword = await bcrypt.hash(password, saltRounds)
-
-    // Perform MySQL query to insert the user into the database
-    const query = 'INSERT INTO users (username, password) VALUES (?, ?)'
-    await queryAsync(query, [username, hashedPassword])
-
-    res.status(201).json({ message: '注册成功' })
   } catch (error) {
     console.error('Error during registration:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 })
 
-// Start the server
 const PORT = 3000
 app.listen(PORT, () => {
+  // 监听端口
   console.log(`Server running on port ${PORT}`)
   establishConnection()
 })

@@ -7,7 +7,7 @@
       <template #title> <router-link to="/">首页</router-link></template>
     </el-menu-item>
     <el-menu-item class="setting">
-      <template #title><router-link to="/setting">设置</router-link></template>
+      <template #title><router-link to="/dashboard/setting">设置</router-link></template>
     </el-menu-item>
     <el-menu-item class="logout">
       <template #title
@@ -19,9 +19,8 @@
   </el-menu>
 </template>
 
-<script scoped>
+<script>
 import { ElMessage } from 'element-plus'
-
 export default {
   methods: {
     handleLogoutClick() {
@@ -40,34 +39,4 @@ export default {
 }
 </script>
 
-<style scoped>
-nav {
-  margin: 5px;
-  padding: 5px;
-}
-
-.title {
-  margin: auto 5px;
-  margin-left: 25px;
-  padding: 5px;
-  align-items: center;
-}
-
-.setting {
-  position: fixed;
-  bottom: 50px;
-  width: 150px;
-}
-
-.logout {
-  position: fixed;
-  bottom: 0px;
-  width: 150px;
-}
-
-.el-menu-vertical {
-  margin: 5px;
-  width: 150px;
-  min-height: 400px;
-}
-</style>
+<style src="../assets/css/navbar.css" scoped></style>
