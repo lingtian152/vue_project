@@ -1,12 +1,15 @@
 # vue project
 
 To Install package please:
+
 ***
+**install.bat or install.sh**
+
+or
+
 ```sh
 npm install
 ```
-***
-database.js is created at src folder
 
 to run dataBase please use:
 

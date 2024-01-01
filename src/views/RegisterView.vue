@@ -25,6 +25,13 @@ const password = ref('')
 
 const register = async () => {
   try {
+    if (!account.value && !password.value)
+      return ElMessage({
+        showClose: true,
+        message: '请输入账号和密码',
+        type: 'error'
+      })
+
     // Make a POST request to the registration endpoint
     const response = await axios.post('http://127.0.0.1:3000/register', {
       username: account.value,
